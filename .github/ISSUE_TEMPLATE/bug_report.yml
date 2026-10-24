@@ -1,0 +1,42 @@
+name: Bug report
+description: Something does not work as described
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Double-click VoiceBeam.bat\n2. Scan the QR code\n3. ..."
+    validations:
+      required: true
+  - type: input
+    id: windows
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 24H2"
+    validations:
+      required: true
+  - type: dropdown
+    id: console
+    attributes:
+      label: Which window did VoiceBeam.bat open in?
+      options:
+        - Windows Terminal (tabs at the top)
+        - The classic black console window
+        - Not sure
+  - type: input
+    id: phone
+    attributes:
+      label: Phone, browser and keyboard app
+      placeholder: "Android 15, Chrome, Doubao keyboard"
+  - type: textarea
+    id: screenshot
+    attributes:
+      label: Screenshot or console output
+      description: Please blank out your network address if you post it publicly.
