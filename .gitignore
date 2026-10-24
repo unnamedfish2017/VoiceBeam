@@ -1,0 +1,5 @@
+# local development tools that are not part of the project
+/dev/
+*.log
+.DS_Store
+Thumbs.db

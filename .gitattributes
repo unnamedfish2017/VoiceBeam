@@ -1,0 +1,5 @@
+* text=auto eol=lf
+# VoiceBeam.bat is stored exactly as built (CR LF line endings), so a raw download or a release
+# asset is byte for byte the file the tests checked
+*.bat -text
+*.png binary

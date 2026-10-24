@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="beads" data-mode="light" data-size="std" data-compact="0">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f8f2e8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>VoiceBeam</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23ff5fa2'/%3E%3Cstop offset='.55' stop-color='%23a066ff'/%3E%3Cstop offset='1' stop-color='%232f9bff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Crect x='25' y='12' width='14' height='26' rx='7' fill='%23fff'/%3E%3Cpath d='M18 31a14 14 0 0 0 28 0M32 45v8M24 53h16' fill='none' stroke='%23fff' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>window.__VB__=/*@CONFIG@*/;window.__VB_LOCALES__=/*@LOCALES@*/;</script>
+<script>
+/* Runs before the first paint so a phone that chose another style never flashes the default one. */
+(function () {
+  var d = document.documentElement, c = window.__VB__ || {};
+  function get(k) { try { return localStorage.getItem('vb.' + k); } catch (e) { return null; } }
+  var theme = get('theme');
+  if (theme !== 'business' && theme !== 'beads') theme = c.theme || 'beads'; /* an unknown or retired name falls back to the default */
+  var mode = get('mode') || 'auto';
+  if (mode === 'auto') mode = window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  d.setAttribute('data-theme', theme);
+  d.setAttribute('data-mode', mode);
+  d.setAttribute('data-size', get('size') || 'std');
+})();
+</script>
+<style>/*@CSS@*/</style>
+</head>
+<body>
+<noscript><p style="padding:24px;font:16px system-ui">VoiceBeam needs JavaScript. 需要开启 JavaScript。</p></noscript>
+
+<div class="backdrop" aria-hidden="true"></div>
+
+<main class="app">
+  <header class="bar">
+    <div class="brand">
+      <span class="logo" id="logo" data-conn="unknown" aria-hidden="true">
+        <svg class="logo-mic" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3" fill="currentColor" stroke="none"/><path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6"/></svg>
+        <i class="conn-dot"></i>
+      </span>
+      <span class="brand-name">VoiceBeam</span>
+    </div>
+    <div class="bar-tools">
+      <div class="seg" role="radiogroup" data-i18n-aria-label="theme.label" aria-label="风格">
+        <button type="button" role="radio" aria-checked="false" data-theme-set="business" data-i18n="theme.business">商务</button>
+        <button type="button" role="radio" aria-checked="true" data-theme-set="beads" data-i18n="theme.beads">拼豆</button>
+      </div>
+      <button type="button" class="icon-btn" id="openSettings" data-i18n-aria-label="settings.open" aria-label="外观与设置" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2.2"/><circle cx="9" cy="17" r="2.2"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="beadstrip" id="beadstrip" aria-hidden="true"></div>
+
+  <div class="banner" id="demoBanner" data-i18n="demo_banner" hidden>演示模式：文字不会粘贴到电脑</div>
+  <div class="banner is-error" id="connBanner" role="alert" hidden></div>
+
+  <form id="form" class="composer" autocomplete="off">
+    <p class="hint" data-i18n="hint">输入文字，发送到电脑当前光标</p>
+    <div class="field">
+      <textarea id="text" autofocus spellcheck="false" autocomplete="off" autocorrect="off" enterkeyhint="enter" data-i18n-placeholder="placeholder" data-i18n-aria-label="placeholder" aria-label="点击这里，使用手机语音输入" placeholder="点击这里，使用手机语音输入"></textarea>
+      <input id="park" class="park" type="text" tabindex="-1" aria-hidden="true" autocomplete="off" autocorrect="off" spellcheck="false">
+      <div class="field-tools">
+        <span class="count" id="count" aria-hidden="true"></span>
+        <button type="button" class="chip" id="clear" data-i18n="clear" hidden>清空</button>
+      </div>
+    </div>
+
+    <div class="actions">
+      <label class="switch">
+        <input id="enter" type="checkbox" checked>
+        <span class="switch-ui" aria-hidden="true"></span>
+        <span class="switch-label" data-i18n="enter">发送后按回车</span>
+      </label>
+      <button id="send" class="send" type="submit">
+        <svg class="send-icon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M3.4 20.4 21.5 12 3.4 3.6l-.1 6.5L15 12 3.3 13.9z"/></svg>
+        <svg class="ok-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.6 4.6L19 7.5"/></svg>
+        <span class="send-label" id="sendLabel" data-i18n="send">发送到电脑</span>
+      </button>
+    </div>
+  </form>
+
+  <div class="status" id="status" role="status" aria-live="polite"></div>
+  <footer class="notice" data-i18n="notice">仅适用于可信局域网 · 不保存输入内容</footer>
+</main>
+
+<div class="sheet-backdrop" id="sheetBackdrop" hidden></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="sheet-grab" aria-hidden="true"></div>
+  <h2 id="sheetTitle" data-i18n="settings.title">外观与设置</h2>
+
+  <div class="group">
+    <h3 data-i18n="theme.label">风格</h3>
+    <div class="theme-cards" role="radiogroup" data-i18n-aria-label="theme.label" aria-label="风格">
+      <button type="button" role="radio" aria-checked="false" class="theme-card" data-theme-set="business">
+        <span class="preview pv-business" aria-hidden="true"><i class="pv-title"></i><i class="pv-field"></i><i class="pv-btn"></i></span>
+        <span class="tc-name" data-i18n="theme.business">商务</span>
+        <span class="tc-desc" data-i18n="theme.business.desc"></span>
+      </button>
+      <button type="button" role="radio" aria-checked="true" class="theme-card" data-theme-set="beads">
+        <span class="preview pv-beads" aria-hidden="true"><i class="pv-strip"></i><i class="pv-field"></i><i class="pv-btn"></i></span>
+        <span class="tc-name" data-i18n="theme.beads">拼豆</span>
+        <span class="tc-desc" data-i18n="theme.beads.desc"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="group">
+    <h3 data-i18n="settings.mode">明暗</h3>
+    <div class="seg wide" role="radiogroup" data-pref="mode" data-i18n-aria-label="settings.mode" aria-label="明暗">
+      <button type="button" role="radio" aria-checked="true" data-value="auto" data-i18n="mode.auto">跟随系统</button>
+      <button type="button" role="radio" aria-checked="false" data-value="light" data-i18n="mode.light">浅色</button>
+      <button type="button" role="radio" aria-checked="false" data-value="dark" data-i18n="mode.dark">深色</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <h3 data-i18n="settings.size">输入字号</h3>
+    <div class="seg wide" role="radiogroup" data-pref="size" data-i18n-aria-label="settings.size" aria-label="输入字号">
+      <button type="button" role="radio" aria-checked="true" data-value="std" data-i18n="size.std">标准</button>
+      <button type="button" role="radio" aria-checked="false" data-value="lg" data-i18n="size.lg">大</button>
+      <button type="button" role="radio" aria-checked="false" data-value="xl" data-i18n="size.xl">特大</button>
+    </div>
+  </div>
+
+  <div class="group">
+    <h3 data-i18n="settings.after">发送后</h3>
+    <div class="seg wide" role="radiogroup" data-pref="after" data-i18n-aria-label="settings.after" aria-label="发送后">
+      <button type="button" role="radio" aria-checked="true" data-value="keep" data-i18n="after.keep">键盘保持打开</button>
+      <button type="button" role="radio" aria-checked="false" data-value="close" data-i18n="after.close">收起键盘</button>
+    </div>
+    <p class="group-note" data-i18n="after.note">如果发送后语音输入还在继续听写，请选“收起键盘”。</p>
+  </div>
+
+  <div class="group">
+    <h3 data-i18n="settings.lang">语言</h3>
+    <div class="seg wide" role="radiogroup" data-pref="lang" id="langSeg" data-i18n-aria-label="settings.lang" aria-label="语言"></div>
+  </div>
+
+  <p class="about" id="about"></p>
+  <button type="button" class="btn-done" id="sheetClose" data-i18n="close">完成</button>
+</section>
+
+<script>/*@JS@*/</script>
+</body>
+</html>
