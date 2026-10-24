@@ -14,7 +14,7 @@ jobs:
         # powershell = the Windows PowerShell 5.1 that Windows ships, which is what VoiceBeam.bat runs on
         shell: [powershell, pwsh]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: VoiceBeam.bat is up to date
         shell: cmd
         run: ${{ matrix.shell }} -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Check
@@ -26,6 +26,6 @@ jobs:
     name: Linux (pwsh)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - run: pwsh -NoProfile -File build.ps1 -Check
       - run: pwsh -NoProfile -File tests/run.ps1
