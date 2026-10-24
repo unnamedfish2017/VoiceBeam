@@ -795,6 +795,26 @@ function Invoke-SendRequest {
     Send-JsonResponse -Stream $Stream -Status 200 -StatusText 'OK' -Obj @{ ok = $true }
 }
 
+# Close a connection without resetting it. When a request is refused before its body is read (another
+# website, too large, ...) the body is still waiting in the socket, and closing it then makes Windows answer
+# with a reset - the client may lose the response and only see "connection reset". So: say we are done
+# sending, swallow what the client still sends (bounded in time and size), then close.
+function Close-Gently($client) {
+    try {
+        $socket = $client.Client
+        $socket.Shutdown([System.Net.Sockets.SocketShutdown]::Send)
+        $socket.ReceiveTimeout = 1000
+        $scrap = New-Object byte[] 8192
+        $total = 0
+        while ($total -lt 1048576) {
+            $n = $socket.Receive($scrap)
+            if ($n -le 0) { break }
+            $total += $n
+        }
+    } catch {}
+    $client.Close()
+}
+
 # The page is assembled from web/ by build.ps1 and embedded as base64, so this file stays pure ASCII.
 $PageHtml = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String('@@PAGE_BASE64@@'))
 $PageBytes = [System.Text.Encoding]::UTF8.GetBytes($PageHtml)
@@ -870,7 +890,7 @@ try {
         } catch {
             Write-Host ('request error: ' + $_.Exception.Message)
         } finally {
-            $client.Close()
+            Close-Gently $client
         }
     }
 } finally {

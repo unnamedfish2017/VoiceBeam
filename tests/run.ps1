@@ -93,6 +93,9 @@ function Send-Request([string]$Method, [string]$Path, $Body = $null, [hashtable]
         $buffer = New-Object System.IO.MemoryStream
         $stream.CopyTo($buffer)
         $response = $buffer.ToArray()
+    } catch {
+        # a reset connection is a failed check, not the end of the run
+        return [pscustomobject]@{ Status = -1; Text = $_.Exception.Message; Json = $null }
     } finally {
         $client.Close()
     }
