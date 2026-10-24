@@ -116,6 +116,10 @@ powershell -ExecutionPolicy Bypass -File tests/run.ps1    # checks the file and 
 
 The tests start the real server inside the `.bat` (only the final paste is replaced by a stub) and check the page, the API and every security check. GitHub Actions runs them on Windows PowerShell 5.1, PowerShell 7 and Linux. More in [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Community
+
+- [Linux.Do](https://linux.do/) — Share, discuss, and follow development with the community.
+
 ## License
 
 [MIT](LICENSE)

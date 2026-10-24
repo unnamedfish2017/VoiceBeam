@@ -117,6 +117,10 @@ powershell -ExecutionPolicy Bypass -File tests/run.ps1    # 检查文件本身�
 
 测试会真的启动 `.bat` 里的服务端（只有最后“粘贴到前台窗口”那一步换成了桩），逐项检查页面、接口和每一条安全检查。GitHub Actions 会在 Windows PowerShell 5.1、PowerShell 7 和 Linux 上运行它们。更多见 [CONTRIBUTING.md](CONTRIBUTING.md)。
 
+## 社区
+
+- [Linux.Do](https://linux.do/) — 与社区一起分享、讨论、关注开发进展。
+
 ## 许可证
 
 [MIT](LICENSE)
