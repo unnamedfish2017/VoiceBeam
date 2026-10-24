@@ -1,0 +1,31 @@
+name: test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  windows:
+    name: Windows (${{ matrix.shell }})
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # powershell = the Windows PowerShell 5.1 that Windows ships, which is what VoiceBeam.bat runs on
+        shell: [powershell, pwsh]
+    steps:
+      - uses: actions/checkout@v4
+      - name: VoiceBeam.bat is up to date
+        shell: cmd
+        run: ${{ matrix.shell }} -NoProfile -ExecutionPolicy Bypass -File build.ps1 -Check
+      - name: Tests (the real server; only the final paste is stubbed)
+        shell: cmd
+        run: ${{ matrix.shell }} -NoProfile -ExecutionPolicy Bypass -File tests/run.ps1
+
+  linux:
+    name: Linux (pwsh)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pwsh -NoProfile -File build.ps1 -Check
+      - run: pwsh -NoProfile -File tests/run.ps1
